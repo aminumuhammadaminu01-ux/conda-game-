@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CONDA GAME</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top, rgba(60, 180, 255, .8), transparent 35%),
+                linear-gradient(180deg, #071f5c 0%, #07112c 60%, #020617 100%);
+            overflow-x: hidden;
+        }
+
+        .page {
+            max-width: 1050px;
+            margin: auto;
+            padding: 16px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 18px 10px 8px;
+        }
+
+        .logo {
+            font-size: clamp(45px, 10vw, 96px);
+            margin: 0;
+            line-height: .88;
+            color: #ffb300;
+            text-shadow: 0 5px 0 #8f2a00, 0 10px 0 #111, 0 0 22px #fff176;
+            letter-spacing: 2px;
+            font-weight: 900;
+        }
+
+        .logo span {
+            color: #fff;
+            display: block;
+        }
+
+        .tagline {
+            display: inline-block;
+            margin-top: 13px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, .55);
+            border: 2px solid rgba(255, 255, 255, .28);
+            font-weight: 800;
+        }
+
+        .game-card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(9, 31, 82, .94), rgba(3, 8, 28, .98));
+            border: 4px solid #36d7ff;
+            border-radius: 28px;
+            box-shadow: 0 0 30px rgba(54, 215, 255, .45), inset 0 0 25px rgba(255, 255, 255, .08);
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .top-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 14px;
+            align-items: center;
+        }
+
+        .choose {
+            background: rgba(0, 0, 0, .45);
+            border: 2px solid rgba(255, 255, 255, .22);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .choose h2 {
+            margin: 0 0 10px;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .player-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .player-btn {
+            border: 3px solid #fff;
+            border-radius: 18px;
+            padding: 12px 18px;
+            min-width: 120px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, .5);
+            transition: .15s;
+        }
+
+        .player-btn:hover,
+        .player-btn.active {
+            transform: translateY(-4px);
+            outline: 4px solid #ffea00;
+        }
+
+        .boy {
+            background: linear-gradient(#1e9bff, #004bd6);
+        }
+
+        .girl {
+            background: linear-gradient(#ff5bc8, #cf006e);
+        }
+
+        .features {
+            display: grid;
+            gap: 10px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, .5);
+            border: 2px solid #00efff;
+            border-radius: 16px;
+            padding: 9px 12px;
+            font-weight: 900;
+            box-shadow: 0 0 12px rgba(0, 239, 255, .25);
+        }
+
+        .feature small {
+            display: block;
+            color: #ffef62;
+            font-weight: 800;
+        }
+
+        .icon {
+            font-size: 34px;
+        }
+
+        .hud {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 14px 0;
+        }
+
+        .hud div {
+            background: #07142e;
+            border: 2px solid rgba(255, 255, 255, .22);
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 900;
+            color: #ffef62;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 980px;
+            height: 460px;
+            display: block;
+            margin: auto;
+            border-radius: 22px;
+            border: 5px solid #ffdf2e;
+            background: #5ecbff;
+            box-shadow: 0 0 25px rgba(255, 223, 46, .4);
+        }
+
+        .actions {
+            text-align: center;
+            padding: 14px 0 4px;
+        }
+
+        .play {
+            background: linear-gradient(#ff3b1f, #b60000);
+            color: white;
+            border: 4px solid #ffcc00;
+            border-radius: 18px;
+            padding: 14px 34px;
+            font-size: 28px;
+            font-weight: 1000;
+            cursor: pointer;
+            text-shadow: 2px 3px 0 #000;
+            box-shadow: 0 8px 0 #4a0000, 0 0 20px rgba(255, 0, 0, .4);
+        }
+
+        .message {
+            margin-top: 12px;
+            font-weight: 900;
+            color: #ffef62;
+            min-height: 24px;
+        }
+
+        .controls {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .controls button {
+            width: 70px;
+            height: 54px;
+            border: 0;
+            border-radius: 16px;
+            background: linear-gradient(#fff, #c9dcff);
+            color: #10245c;
+            font-size: 24px;
+            font-weight: 900;
+            box-shadow: 0 5px 0 #5a6e9d;
+            cursor: pointer;
+        }
+
+        .credit {
+            text-align: center;
+            padding: 16px;
+            color: #ffdf2e;
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <section class="hero">
+            <h1 class="logo">CONDA <span>GAME</span></h1>
+            <div class="tagline">ADVENTURE • ACTION • FUN</div>
+        </section>
+
+        <section class="game-card">
+            <div class="top-panel">
+                <div class="choose">
+                    <h2>CHOOSE YOUR PLAYER</h2>
+                    <div class="player-buttons">
+                        <button class="player-btn boy active" id="boyBtn" onclick="chooseHero('boy')">🧒 BOY</button>
+                        <button class="player-btn girl" id="girlBtn" onclick="chooseHero('girl')">👧 GIRL</button>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature"><span class="icon">🪙</span>
+                        <div>COLLECT COINS<small>Get more points!</small></div>
+                    </div>
+                    <div class="feature"><span class="icon">🐍</span>
+                        <div>AVOID THE SNAKE<small>Stay safe!</small></div>
+                    </div>
+                    <div class="feature"><span class="icon">🏆</span>
+                        <div>LEVEL UP & WIN<small>Become champion!</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud">
+                <div>PLAYER: <span id="heroName">BOY</span></div>
+                <div>SCORE: <span id="score">0</span></div>
+                <div>LIVES: <span id="lives">3</span></div>
+                <div>LEVEL: <span id="level">1</span></div>
+            </div>
+
+            <canvas id="game" width="980" height="460"></canvas>
+
+            <div class="actions">
+                <button class="play" onclick="startGame()">PLAY NOW</button>
+                <div class="message" id="message">Choose boy or girl, then press PLAY NOW.</div>
+            </div>
+
+            <div class="controls">
+                <button onclick="pressLeft()">⬅</button>
+                <button onclick="jump()">⬆</button>
+                <button onclick="pressRight()">➡</button>
+            </div>
+        </section>
+
+        <div class="credit">★ MADE BY AMINU ★</div>
+
+        <!-- Music Player -->
+        <div style="text-align:center; margin-top:10px;">
+            <button class="play" onclick="toggleMusic()">🎵 Music ON/OFF</button>
+            <audio id="bgMusic" loop>
+                <!-- To use your own song, put your MP3 file in the same folder as this HTML file, then change the src below to your file name, for example: my-song.mp3 -->
+                <source
+                    src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4f0f9c0a9d.mp3?filename=game-music-loop-110624.mp3"
+                    type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+
+        let hero = 'boy';
+        let heroEmoji = '🧒';
+        let running = false;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let keys = {};
+        let frame = 0;
+
+        const player = { x: 70, y: 330, w: 48, h: 56, vy: 0, speed: 7, ground: false };
+        let coins = [];
+        let snakes = [];
+        const clouds = [{ x: 90, y: 65 }, { x: 410, y: 55 }, { x: 720, y: 80 }];
+
+        function chooseHero(type) {
+            hero = type;
+            heroEmoji = type === 'boy' ? '🧒' : '👧';
+            document.getElementById('heroName').textContent = type.toUpperCase();
+            document.getElementById('boyBtn').classList.toggle('active', type === 'boy');
+            document.getElementById('girlBtn').classList.toggle('active', type === 'girl');
+            document.getElementById('message').textContent = 'You selected ' + type.toUpperCase() + '. Press PLAY NOW.';
+            draw();
+        }
+
+        function startGame() {
+            score = 0;
+            lives = 3;
+            level = 1;
+            frame = 0;
+            player.x = 70;
+            player.y = 330;
+            player.vy = 0;
+            player.ground = true;
+            coins = [];
+            snakes = [];
+
+            for (let i = 0; i < 10; i++) {
+                addCoin(280 + i * 95);
+            }
+
+            addSnake(980);
+            running = true;
+            updateHud();
+            document.getElementById('message').textContent = 'Game started! Collect coins and avoid snake.';
+            requestAnimationFrame(loop);
+        }
+
+        function addCoin(x) {
+            coins.push({
+                x: x,
+                y: 260 - Math.random() * 120,
+                size: 36,
+                got: false,
+                glow: Math.random() * 10
+            });
+        }
+
+        function addSnake(x) {
+            snakes.push({
+                x: x,
+                y: 350,
+                w: 55,
+                h: 42,
+                speed: 3 + level * 0.7
+            });
+        }
+
+        function updateHud() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('level').textContent = level;
+        }
+
+        function loop() {
+            if (!running) {
+                draw();
+                return;
+            }
+
+            frame++;
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        function update() {
+            if (keys.ArrowRight) player.x += player.speed;
+            if (keys.ArrowLeft) player.x -= player.speed;
+            player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
+
+            player.vy += 0.75;
+            player.y += player.vy;
+            if (player.y >= 330) {
+                player.y = 330;
+                player.vy = 0;
+                player.ground = true;
+            }
+
+            coins.forEach(function (coin) {
+                coin.x -= 2 + level * 0.25;
+
+                if (!coin.got && collide(player, { x: coin.x, y: coin.y, w: coin.size, h: coin.size })) {
+                    coin.got = true;
+                    score += 10;
+                    playCoinSound();
+
+                    if (score > 0 && score % 50 === 0) {
+                        level++;
+                        document.getElementById('message').textContent = 'LEVEL UP! You are now level ' + level;
+                    }
+
+                    updateHud();
+                }
+            });
+
+            coins = coins.filter(function (coin) {
+                return coin.x > -40 && !coin.got;
+            });
+
+            while (coins.length < 10) {
+                addCoin(canvas.width + Math.random() * 300);
+            }
+
+            snakes.forEach(function (snake) {
+                snake.x -= snake.speed;
+
+                if (collide(player, snake)) {
+                    lives--;
+                    updateHud();
+                    document.getElementById('message').textContent = 'Snake touched you! Stay safe.';
+                    snake.x = canvas.width + 180;
+                    player.x = 70;
+
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+
+            snakes = snakes.filter(function (snake) {
+                return snake.x > -80;
+            });
+
+            if (frame % 180 === 0) {
+                addSnake(canvas.width + 80);
+            }
+        }
+
+        function gameOver() {
+            running = false;
+            playGameOverSound();
+            document.getElementById('message').textContent = 'GAME OVER! Your score is ' + score + '. Press PLAY NOW again.';
+        }
+
+        function collide(a, b) {
+            return a.x < b.x + b.w &&
+                a.x + a.w > b.x &&
+                a.y < b.y + b.h &&
+                a.y + a.h > b.y;
+        }
+
+        function drawEmoji(text, x, y, size) {
+            ctx.font = size + 'px Arial';
+            ctx.fillText(text, x, y);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            sky.addColorStop(0, '#63caff');
+            sky.addColorStop(0.58, '#66d6ff');
+            sky.addColorStop(1, '#64aa37');
+            ctx.fillStyle = sky;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            clouds.forEach(function (cloud) {
+                ctx.fillStyle = 'rgba(255,255,255,.85)';
+                ctx.beginPath();
+                ctx.arc(cloud.x, cloud.y, 26, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cloud.x + 34, cloud.y - 7, 34, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cloud.x + 73, cloud.y, 25, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.fillStyle = '#7b4b23';
+            for (let x = 0; x < canvas.width; x += 95) {
+                ctx.fillRect(x, 390, 90, 55);
+                ctx.fillStyle = '#3bbb38';
+                ctx.fillRect(x, 370, 90, 24);
+                ctx.fillStyle = '#7b4b23';
+            }
+
+            ctx.fillStyle = 'rgba(0,0,0,.35)';
+            ctx.fillRect(0, 0, canvas.width, 48);
+            ctx.fillStyle = '#ffdf2e';
+            ctx.font = '900 26px Arial';
+            ctx.fillText('CONDA ADVENTURE', 20, 32);
+            ctx.fillStyle = '#fff';
+            ctx.font = '900 20px Arial';
+            ctx.fillText('🪙 ' + score + '   ❤️ ' + lives + '   🏆 Level ' + level, canvas.width - 260, 31);
+
+            coins.forEach(function (coin) {
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 20;
+                drawEmoji('🪙', coin.x, coin.y + 30, 40);
+                ctx.shadowBlur = 0;
+            });
+
+            snakes.forEach(function (snake) {
+                drawEmoji('🐍', snake.x, snake.y + 38, 45);
+            });
+
+            drawEmoji(heroEmoji, player.x, player.y + 50, 54);
+
+            if (!running) {
+                ctx.fillStyle = 'rgba(0,0,0,.45)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffdf2e';
+                ctx.font = '900 52px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('PLAY CONDA GAME', canvas.width / 2, 195);
+                ctx.fillStyle = '#fff';
+                ctx.font = '900 26px Arial';
+                ctx.fillText('Collect coins • Avoid snake • Level up', canvas.width / 2, 240);
+                ctx.textAlign = 'left';
+            }
+        }
+
+        function jump() {
+            if (player.ground && running) {
+                player.vy = -15;
+                player.ground = false;
+            }
+        }
+
+        function pressLeft() {
+            keys.ArrowLeft = true;
+            setTimeout(function () {
+                keys.ArrowLeft = false;
+            }, 130);
+        }
+
+        function pressRight() {
+            keys.ArrowRight = true;
+            setTimeout(function () {
+                keys.ArrowRight = false;
+            }, 130);
+        }
+
+        document.addEventListener('keydown', function (event) {
+            keys[event.key] = true;
+            if (event.code === 'Space' || event.key === 'ArrowUp') {
+                jump();
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            keys[event.key] = false;
+        });
+
+        function runTests() {
+            console.assert(typeof addCoin === 'function', 'Test failed: addCoin must exist');
+            console.assert(typeof addSnake === 'function', 'Test failed: addSnake must exist');
+            console.assert(typeof collide === 'function', 'Test failed: collide must exist');
+
+            const beforeCoins = coins.length;
+            addCoin(123);
+            console.assert(coins.length === beforeCoins + 1, 'Test failed: addCoin should add one coin');
+            console.assert(coins[coins.length - 1].size === 36, 'Test failed: coin size should be 36');
+
+            console.assert(
+                collide({ x: 0, y: 0, w: 10, h: 10 }, { x: 5, y: 5, w: 10, h: 10 }) === true,
+                'Test failed: collide should detect overlap'
+            );
+            console.assert(
+                collide({ x: 0, y: 0, w: 10, h: 10 }, { x: 50, y: 50, w: 10, h: 10 }) === false,
+                'Test failed: collide should detect non-overlap'
+            );
+
+            coins.pop();
+            console.log('Conda game tests passed');
+        }
+
+        chooseHero('boy');
+
+        // MUSIC CONTROL
+        const music = document.getElementById('bgMusic');
+        let musicOn = false;
+
+        function toggleMusic() {
+            if (!musicOn) {
+                music.play();
+                musicOn = true;
+            } else {
+                music.pause();
+                musicOn = false;
+            }
+        }
+
+        function playCoinSound() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(850, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1400, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.13);
+        }
+
+        function playGameOverSound() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(260, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(70, audioCtx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.72);
+        }
+        runTests();
+    </script>
+</body>
+
+</html>
